@@ -1,0 +1,627 @@
+import { MenuItem } from "./types";
+
+
+export const defaultMenuItems: MenuItem[] = [
+  {
+    "id": "mutton-biryani",
+    "name": "Mutton biryani",
+    "description": "Serves2",
+    "originalPrice": 489,
+    "price": 449,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/716250fcc55a0f38f4bc93e902892701579d2e73.jpg",
+    "category": "biryani",
+    "popular": true,
+    "available": true
+  },
+  {
+    "id": "chicken-lollypop-biryani",
+    "name": "Chicken lollypop biryani",
+    "description": "Serves1",
+    "originalPrice": 440,
+    "price": 400,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6910c28e94c3f17888d68c5025a516f9204418fd.jpg",
+    "category": "biryani",
+    "popular": true,
+    "available": true
+  },
+  {
+    "id": "chicken-special-biryani",
+    "name": "Chicken special biryani",
+    "description": "Serves1",
+    "originalPrice": 419,
+    "price": 379,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/25c4e66392a08cad7b9f56a01991f1c1c54790b4.jpg",
+    "category": "biryani",
+    "popular": true,
+    "available": true
+  },
+  {
+    "id": "mini-chicken-dum-biryani",
+    "name": "Mini chicken dum biryani",
+    "description": "Serves1",
+    "originalPrice": 309,
+    "price": 269,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6b7682a86d8aff1a0825cfd944064a46cb797239.jpg",
+    "category": "biryani",
+    "popular": true,
+    "available": true
+  },
+  {
+    "id": "mini-chicken-fry-piece-biryani",
+    "name": "Mini chicken fry piece biryani",
+    "description": "Serves1",
+    "originalPrice": 319,
+    "price": 279,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/60f5373899227533a2dac89a2967294c14c773cb.jpg",
+    "category": "biryani",
+    "popular": true,
+    "available": true
+  },
+  {
+    "id": "biryani-rice",
+    "name": "Biryani Rice",
+    "description": "Biryani Rice",
+    "originalPrice": 150,
+    "price": 110,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6ae199ba35c451d7f2862a07d8b3f8ae0e81020e.jpg",
+    "category": "biryani",
+    "popular": true,
+    "available": true
+  },
+
+  {
+    "id": "chicken-fry-piece-biryani",
+    "name": "Chicken fry piece biryani",
+    "description": "Serves2",
+    "originalPrice": 420,
+    "price": 380,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/152c164d41579b849dce2c6ca6d34ee85a6ae854.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "mixed-nonveg-mogalay-biryani",
+    "name": "Mixed nonveg mogalay biryani",
+    "description": "Serves1",
+    "originalPrice": 439,
+    "price": 399,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1111f62df68fab0148065852758ca4ed382eed95.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "prawn-biryani",
+    "name": "Prawn biryani",
+    "description": "Serves2",
+    "originalPrice": 439,
+    "price": 399,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/d7b17f11267a80eab27bdc63101548bd9ec34427.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-mogalayi-biryani-special",
+    "name": "Chicken mogalayi biryani (special)",
+    "description": "Serves2",
+    "originalPrice": 425,
+    "price": 385,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/196af37f567f3c6fec4aa0f12deb1572ca5c504d.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-dum-biryani",
+    "name": "Chicken dum biryani",
+    "description": "Serves1",
+    "originalPrice": 400,
+    "price": 360,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/0409b7a847b7e255673bdcd5374a31b7f652413e.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-wings-biryani",
+    "name": "Chicken wings biryani",
+    "description": "Serves1",
+    "originalPrice": 420,
+    "price": 380,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/cd15702cdceff40b744a1ba92df3c8906749e3ec.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+
+  {
+    "id": "chittimutyalu-chicken-palav",
+    "name": "Chittimutyalu chicken palav",
+    "description": "Authentic Chittimutyalu rice cooked with succulent chicken fry pieces and traditional spices.",
+    "originalPrice": 420,
+    "price": 380,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/152c164d41579b849dce2c6ca6d34ee85a6ae854.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-bonless-biryani",
+    "name": "Chicken bonless biryani",
+    "description": "Serves2",
+    "originalPrice": 420,
+    "price": 380,
+    "image": "https://myfoodstory.com/wp-content/uploads/2025/09/Boneless-Chicken-Biryani-Meghanas-2.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+
+
+  {
+    "id": "chicken-65-biryani",
+    "name": "Chicken 65 biryani",
+    "description": "Serves1",
+    "originalPrice": 419,
+    "price": 379,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/798b88ac4ab27b76952393215bfae146b1c7749e.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "egg-biryani",
+    "name": "Egg biryani",
+    "description": "Serves1",
+    "originalPrice": 330,
+    "price": 290,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7772ff75fec328c1df6fa69403bd97c0a28b7b1d.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+
+  {
+    "id": "mini-prawns-biryani",
+    "name": "Mini prawns biryani",
+    "description": "Serves1",
+    "originalPrice": 319,
+    "price": 279,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e36693c4f6b9ebc0e27052519d91f0f8a8283d2.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "mini-chicken-wings-biryani",
+    "name": "Mini chicken wings biryani",
+    "description": "Serves1",
+    "originalPrice": 299,
+    "price": 259,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/8c6f248233c7b0363a3f5a0290b6596b3d5f90e4.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+
+  {
+    "id": "chicken-dilkush-biryani",
+    "name": "Chicken dilkush biryani",
+    "description": "Serves1",
+    "originalPrice": 409,
+    "price": 369,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7b2de5f3f620ff55c85f3758df11e588dfa121f0.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "gongura-chicken-biryani",
+    "name": "Gongura chicken biryani",
+    "description": "Serves1",
+    "originalPrice": 420,
+    "price": 380,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6b7682a86d8aff1a0825cfd944064a46cb797239.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "prawn-65",
+    "name": "Prawn 65",
+    "description": "Prawn 65",
+    "originalPrice": 429,
+    "price": 389,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/d7b17f11267a80eab27bdc63101548bd9ec34427.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "wings-wet-6-pieces",
+    "name": "Wings wet (6 pieces)",
+    "description": "Wings wet (6 pieces)",
+    "originalPrice": 399,
+    "price": 359,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6910c28e94c3f17888d68c5025a516f9204418fd.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chilli-chicken",
+    "name": "Chilli chicken",
+    "description": "Chilli chicken",
+    "originalPrice": 389,
+    "price": 349,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/798b88ac4ab27b76952393215bfae146b1c7749e.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-555",
+    "name": "Chicken 555",
+    "description": "Chicken 555",
+    "originalPrice": 389,
+    "price": 349,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/152c164d41579b849dce2c6ca6d34ee85a6ae854.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "lemon-chicken",
+    "name": "Lemon chicken",
+    "description": "Lemon chicken",
+    "originalPrice": 379,
+    "price": 339,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/25c4e66392a08cad7b9f56a01991f1c1c54790b4.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "pepper-chicken",
+    "name": "Pepper chicken",
+    "description": "Pepper chicken",
+    "originalPrice": 379,
+    "price": 339,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/60f5373899227533a2dac89a2967294c14c773cb.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chilli-egg",
+    "name": "Chilli egg",
+    "description": "Chilli egg",
+    "originalPrice": 299,
+    "price": 259,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7772ff75fec328c1df6fa69403bd97c0a28b7b1d.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "ginger-chicken",
+    "name": "Ginger chicken",
+    "description": "Ginger chicken",
+    "originalPrice": 339,
+    "price": 299,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/85d0fe5a4cac32610252ef2cffdc6e07144899e1.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "anda-bhurji",
+    "name": "Anda bhurji",
+    "description": "Anda bhurji",
+    "originalPrice": 199,
+    "price": 159,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7772ff75fec328c1df6fa69403bd97c0a28b7b1d.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "garlic-chicken",
+    "name": "Garlic chicken",
+    "description": "Garlic chicken",
+    "originalPrice": 339,
+    "price": 299,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/152c164d41579b849dce2c6ca6d34ee85a6ae854.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "dragon-chicken",
+    "name": "Dragon chicken",
+    "description": "Dragon chicken",
+    "originalPrice": 369,
+    "price": 329,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/798b88ac4ab27b76952393215bfae146b1c7749e.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "wings-dry-6pieces",
+    "name": "Wings dry (6pieces)",
+    "description": "Wings dry (6pieces)",
+    "originalPrice": 399,
+    "price": 359,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/cd15702cdceff40b744a1ba92df3c8906749e3ec.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-pakoda",
+    "name": "Chicken pakoda",
+    "description": "Chicken pakoda",
+    "originalPrice": 369,
+    "price": 329,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/60f5373899227533a2dac89a2967294c14c773cb.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "kaju-nut-chicken",
+    "name": "Kaju nut chicken",
+    "description": "Kaju nut chicken",
+    "originalPrice": 399,
+    "price": 359,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/196af37f567f3c6fec4aa0f12deb1572ca5c504d.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chilli-prawn",
+    "name": "Chilli prawn",
+    "description": "Chilli prawn",
+    "originalPrice": 419,
+    "price": 379,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/d7b17f11267a80eab27bdc63101548bd9ec34427.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "loose-prawn",
+    "name": "Loose prawn",
+    "description": "Loose prawn",
+    "originalPrice": 469,
+    "price": 429,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e36693c4f6b9ebc0e27052519d91f0f8a8283d2.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "mushroom-egg",
+    "name": "Mushroom egg",
+    "description": "Mushroom egg",
+    "originalPrice": 339,
+    "price": 299,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7772ff75fec328c1df6fa69403bd97c0a28b7b1d.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "boiled-eggs-4eggs",
+    "name": "Boiled eggs (4eggs)",
+    "description": "Boiled eggs (4eggs)",
+    "originalPrice": 155,
+    "price": 115,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6b7682a86d8aff1a0825cfd944064a46cb797239.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-schezwan-fried-rice",
+    "name": "Chicken schezwan fried rice",
+    "description": "Chicken schezwan fried rice",
+    "originalPrice": 339,
+    "price": 299,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6ae199ba35c451d7f2862a07d8b3f8ae0e81020e.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "mixed-non-veg-schezwan-fried-rice",
+    "name": "Mixed non veg schezwan fried rice",
+    "description": "Mixed non veg schezwan fried rice",
+    "originalPrice": 439,
+    "price": 399,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1111f62df68fab0148065852758ca4ed382eed95.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "prawns-fried-rice",
+    "name": "Prawns fried rice",
+    "description": "Prawns fried rice",
+    "originalPrice": 370,
+    "price": 330,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/d7b17f11267a80eab27bdc63101548bd9ec34427.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-fried-rice",
+    "name": "Chicken fried rice",
+    "description": "Chicken fried rice",
+    "originalPrice": 329,
+    "price": 289,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/152c164d41579b849dce2c6ca6d34ee85a6ae854.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "egg-fried-rice",
+    "name": "Egg fried rice",
+    "description": "Egg fried rice",
+    "originalPrice": 299,
+    "price": 259,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/7772ff75fec328c1df6fa69403bd97c0a28b7b1d.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "prawns-schezwan-fried-rice",
+    "name": "Prawns schezwan fried rice",
+    "description": "Prawns schezwan fried rice",
+    "originalPrice": 399,
+    "price": 359,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e36693c4f6b9ebc0e27052519d91f0f8a8283d2.jpg",
+    "category": "biryani",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-butter-masala",
+    "name": "Chicken butter masala",
+    "description": "Chicken butter masala",
+    "originalPrice": 379,
+    "price": 339,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/196af37f567f3c6fec4aa0f12deb1572ca5c504d.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-mogalay-curry",
+    "name": "Chicken mogalay curry",
+    "description": "Chicken mogalay curry",
+    "originalPrice": 379,
+    "price": 339,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/196af37f567f3c6fec4aa0f12deb1572ca5c504d.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-fry",
+    "name": "Chicken fry",
+    "description": "Chicken fry",
+    "originalPrice": 329,
+    "price": 289,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/60f5373899227533a2dac89a2967294c14c773cb.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "andhra-chicken-bone-curry",
+    "name": "Andhra chicken bone curry",
+    "description": "Andhra chicken bone curry",
+    "originalPrice": 359,
+    "price": 319,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6b7682a86d8aff1a0825cfd944064a46cb797239.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "andhra-chicken-boneless-curry",
+    "name": "Andhra chicken boneless curry",
+    "description": "Andhra chicken boneless curry",
+    "originalPrice": 369,
+    "price": 329,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/85d0fe5a4cac32610252ef2cffdc6e07144899e1.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "kadai-chicken-curry",
+    "name": "Kadai chicken curry",
+    "description": "Kadai chicken curry",
+    "originalPrice": 389,
+    "price": 349,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/152c164d41579b849dce2c6ca6d34ee85a6ae854.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "gongura-chicken-curry",
+    "name": "Gongura chicken curry",
+    "description": "Gongura chicken curry",
+    "originalPrice": 339,
+    "price": 299,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/25c4e66392a08cad7b9f56a01991f1c1c54790b4.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "prawn-butter-masala",
+    "name": "Prawn butter masala",
+    "description": "Prawn butter masala",
+    "originalPrice": 419,
+    "price": 379,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/d7b17f11267a80eab27bdc63101548bd9ec34427.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "prawn-mogalay-currry",
+    "name": "Prawn mogalay currry",
+    "description": "Prawn mogalay currry",
+    "originalPrice": 439,
+    "price": 399,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/196af37f567f3c6fec4aa0f12deb1572ca5c504d.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "prawn-fry",
+    "name": "Prawn fry",
+    "description": "Prawn fry",
+    "originalPrice": 499,
+    "price": 459,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/1e36693c4f6b9ebc0e27052519d91f0f8a8283d2.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-hot-soup",
+    "name": "Chicken hot soup",
+    "description": "Chicken hot soup",
+    "originalPrice": 180,
+    "price": 140,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6ae199ba35c451d7f2862a07d8b3f8ae0e81020e.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  },
+  {
+    "id": "chicken-manchurian-soup",
+    "name": "Chicken manchurian soup",
+    "description": "Chicken manchurian soup",
+    "originalPrice": 188,
+    "price": 148,
+    "image": "https://pplx-res.cloudinary.com/image/upload/pplx_search_images/152c164d41579b849dce2c6ca6d34ee85a6ae854.jpg",
+    "category": "sides",
+    "popular": false,
+    "available": true
+  }
+];
