@@ -186,12 +186,49 @@ function OrderPageContent() {
                       <div className="space-y-6">
                         {menuItems
                           .filter((item) => {
-                            const restrictedBranches = ["seethammadhara", "diamond-park", "gajuwaka"];
-                            const allowedItems = ["chicken-fry-piece-biryani", "chicken-dum-biryani", "chittimutyalu-chicken-palav", "chicken-fry"];
-                            if (selectedBranch && restrictedBranches.includes(selectedBranch.id)) {
-                              return allowedItems.includes(item.id);
+                            // FULL VERSION BRANCHES
+                            const FULL_MENU_BRANCHES = ["nad-junction", "gajuwaka"];
+                            const isFullMenuBranch = selectedBranch && FULL_MENU_BRANCHES.includes(selectedBranch.id);
+                            
+                            // RESTRICTED VERSION ITEMS
+                            const LIMITED_MENU_ITEMS = [
+                              "chicken-dum-biryani",
+                              "chicken-fry-piece-biryani",
+                              "chittimutyalu-chicken-palav",
+                              "prawn-biryani",
+                              "chicken-fry"
+                            ];
+
+                            if (isFullMenuBranch) {
+                              // Rule: If item has a specific branchId, only show if it matches selected branch
+                              // If item has no branchId, it's global and shows everywhere
+                              if (item.branchId) {
+                                return item.branchId === selectedBranch.id;
+                              }
+                              return true;
+                            } else {
+                              // Rule: Limited branches only see the specific 5 items
+                              return LIMITED_MENU_ITEMS.includes(item.id);
                             }
-                            return true;
+                          })
+                          .map((item) => {
+                            // Apply price overrides for limited menu branches
+                            const FULL_MENU_BRANCHES = ["nad-junction", "gajuwaka"];
+                            const isLimitedBranch = selectedBranch && !FULL_MENU_BRANCHES.includes(selectedBranch.id);
+                            
+                            if (isLimitedBranch) {
+                              const PRICE_OVERRIDES: Record<string, number> = {
+                                "prawn-biryani": 200,
+                                "chicken-dum-biryani": 150,
+                                "chicken-fry-piece-biryani": 150,
+                                "chittimutyalu-chicken-palav": 150,
+                                "chicken-fry": 150
+                              };
+                              if (PRICE_OVERRIDES[item.id]) {
+                                return { ...item, price: PRICE_OVERRIDES[item.id] };
+                              }
+                            }
+                            return item;
                           })
                           .map((item, idx) => (
                             <motion.div

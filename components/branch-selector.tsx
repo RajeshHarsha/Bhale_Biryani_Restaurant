@@ -1,8 +1,7 @@
-"use client";
-
-import { Branch, BRANCHES } from "@/lib/types";
+import { useState, useEffect } from "react";
+import { Branch } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Star, Navigation, ChevronRight } from "lucide-react";
+import { MapPin, Star, Navigation, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface BranchSelectorProps {
@@ -10,6 +9,19 @@ interface BranchSelectorProps {
 }
 
 export function BranchSelector({ onSelect }: BranchSelectorProps) {
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/branches")
+      .then((res) => res.json())
+      .then((data) => {
+        setBranches(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
   return (
     <div className="min-h-[60vh]">
       <div className="mb-8">
@@ -21,8 +33,14 @@ export function BranchSelector({ onSelect }: BranchSelectorProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl">
-        {BRANCHES.map((branch) => (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <Loader2 className="h-10 w-10 text-primary animate-spin" />
+          <p className="text-muted-foreground font-medium">Loading branches...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl">
+          {branches.map((branch) => (
           <Card
             key={branch.id}
             className="cursor-pointer group hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:border-primary/50 transition-all duration-500 bg-card/60 backdrop-blur-sm border-none shadow-sm relative overflow-hidden"
@@ -74,8 +92,9 @@ export function BranchSelector({ onSelect }: BranchSelectorProps) {
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Directions hint */}
       <div className="mt-10 flex items-center gap-3 text-sm text-muted-foreground max-w-5xl bg-muted/30 p-4 rounded-xl border border-border/50">

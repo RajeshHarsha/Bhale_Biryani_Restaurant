@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMenuItems, saveMenuItems, addMenuItem, deleteMenuItem, updateMenuItem } from "@/lib/db";
+import { MenuItemSchema } from "@/lib/schemas";
+import { sanitizeObject } from "@/lib/security";
 
 export async function GET() {
   try {
-    const items = getMenuItems();
+    const items = await getMenuItems();
     return NextResponse.json(items);
   } catch {
     return NextResponse.json(
@@ -15,37 +17,37 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { action, item, items, id, updates } = body;
+    const rawBody = await request.json();
+    const { action, id } = rawBody;
 
     switch (action) {
       case "update-all":
-        if (!items) {
-          return NextResponse.json({ error: "Missing items" }, { status: 400 });
+        const itemsValidation = MenuItemSchema.array().safeParse(rawBody.items);
+        if (!itemsValidation.success) {
+          return NextResponse.json({ error: "Invalid items data" }, { status: 400 });
         }
-        const saved = saveMenuItems(items);
+        const saved = await saveMenuItems(sanitizeObject(itemsValidation.data));
         return NextResponse.json(saved);
 
       case "add":
-        if (!item) {
-          return NextResponse.json({ error: "Missing item" }, { status: 400 });
+        const addValidation = MenuItemSchema.safeParse(rawBody.item);
+        if (!addValidation.success) {
+          return NextResponse.json({ error: "Invalid item data" }, { status: 400 });
         }
-        const added = addMenuItem(item);
+        const added = await addMenuItem(sanitizeObject(addValidation.data));
         return NextResponse.json(added, { status: 201 });
 
       case "update":
-        if (!id || !updates) {
-          return NextResponse.json(
-            { error: "Missing id or updates" },
-            { status: 400 }
-          );
+        if (!id || !rawBody.updates) {
+          return NextResponse.json({ error: "Missing id or updates" }, { status: 400 });
         }
-        const updated = updateMenuItem(id, updates);
+        const updateValidation = MenuItemSchema.partial().safeParse(rawBody.updates);
+        if (!updateValidation.success) {
+          return NextResponse.json({ error: "Invalid update data" }, { status: 400 });
+        }
+        const updated = await updateMenuItem(id, sanitizeObject(updateValidation.data));
         if (!updated) {
-          return NextResponse.json(
-            { error: "Item not found" },
-            { status: 404 }
-          );
+          return NextResponse.json({ error: "Item not found" }, { status: 404 });
         }
         return NextResponse.json(updated);
 
@@ -53,12 +55,9 @@ export async function PUT(request: NextRequest) {
         if (!id) {
           return NextResponse.json({ error: "Missing id" }, { status: 400 });
         }
-        const deleted = deleteMenuItem(id);
+        const deleted = await deleteMenuItem(id);
         if (!deleted) {
-          return NextResponse.json(
-            { error: "Item not found" },
-            { status: 404 }
-          );
+          return NextResponse.json({ error: "Item not found" }, { status: 404 });
         }
         return NextResponse.json({ success: true });
 

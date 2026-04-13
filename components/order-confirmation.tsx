@@ -1,9 +1,8 @@
-"use client";
-
-import { Order, BRANCHES } from "@/lib/types";
+import { useState, useEffect } from "react";
+import { Order, Branch } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, MessageCircle, Home, Phone, IndianRupee, Clock, MapPin } from "lucide-react";
+import { CheckCircle, MessageCircle, Home, Phone, IndianRupee, Clock, MapPin, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 interface OrderConfirmationProps {
@@ -11,7 +10,20 @@ interface OrderConfirmationProps {
 }
 
 export function OrderConfirmation({ order }: OrderConfirmationProps) {
-  const branchInfo = BRANCHES.find((b) => b.id === order.branch);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/branches")
+      .then((res) => res.json())
+      .then((data) => {
+        setBranches(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const branchInfo = branches.find((b) => b.id === order.branch);
   const whatsappNumber = "919849092758"; // Temporary single number for all branches
 
   const currentTime = new Date().toLocaleString("en-IN", {
@@ -23,12 +35,11 @@ export function OrderConfirmation({ order }: OrderConfirmationProps) {
     hour12: true,
   });
 
-  const itemsList = order.items
-    .map(
-      (item, i) =>
-        `   ${i + 1}. ${item.name} × ${item.quantity} — ₹${item.price * item.quantity}`
-    )
-    .join("\n");
+  const subtotal = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const platformCharge = 5;
+  const taxRate = 0.18;
+  const taxAmount = Math.round((subtotal + platformCharge) * taxRate);
+  const totalBill = subtotal + platformCharge + taxAmount;
 
   const whatsappMessage = encodeURIComponent(
     `----------------------------------------\n` +
@@ -36,11 +47,15 @@ export function OrderConfirmation({ order }: OrderConfirmationProps) {
       `----------------------------------------\n\n` +
       `Order ID: ${order.id}\n` +
       `Type: ${order.orderType === "dine-in" ? "Dine-in" : "Takeaway"}\n` +
-      `Branch: ${branchInfo?.shortName || order.branch}\n\n` +
+      `Branch: ${branchInfo?.shortName || order.branch}\n` +
+      `GSTIN: Applied (Pending)\n\n` +
       `ITEMS:\n` +
       `${order.items.map(i => `- ${i.name} x ${i.quantity} (₹${i.price * i.quantity})`).join('\n')}\n\n` +
+      `Subtotal: ₹${subtotal}\n` +
+      `Platform Fee: ₹${platformCharge}\n` +
+      `GST (18%): ₹${taxAmount}\n` +
       `----------------------------------------\n` +
-      `TOTAL BILL: *₹${order.total}*\n` +
+      `TOTAL BILL: *₹${totalBill}*\n` +
       `----------------------------------------\n\n` +
       `Customer: ${order.customer.name}\n` +
       `Phone: ${order.customer.phone}\n\n` +
@@ -74,6 +89,9 @@ export function OrderConfirmation({ order }: OrderConfirmationProps) {
                 {order.id}
               </span>
             </div>
+            <div className="flex justify-between items-center mb-4 text-[10px] font-bold text-[#8b7e6d] uppercase">
+              <span>GSTIN: Applied (Pending)</span>
+            </div>
             <div className="flex justify-between items-center mb-4">
               <span className="text-sm text-[#8b7e6d]">Type</span>
               <div className="flex items-center gap-1.5">
@@ -89,18 +107,12 @@ export function OrderConfirmation({ order }: OrderConfirmationProps) {
                 {branchInfo?.shortName || order.branch}
               </span>
             </div>
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-base font-semibold text-[#8b7e6d]">Total Bill</span>
-              <span className="text-xl font-bold text-[#b45309]">
-                ₹{order.total}
-              </span>
-            </div>
             
             <div className="border-t border-[#f5e6d3] pt-4 mt-2">
-              <p className="text-[10px] uppercase font-bold text-[#8b7e6d] mb-3 tracking-wider">Items:</p>
+              <p className="text-[10px] uppercase font-bold text-[#8b7e6d] mb-3 tracking-wider">Bill Details:</p>
               {order.items.map((item, i) => (
                 <div key={i} className="flex justify-between text-sm py-1">
-                  <span className="text-black font-medium">
+                  <span className="text-black font-medium text-[13px]">
                     {item.name} × {item.quantity}
                   </span>
                   <span className="text-black font-bold">
@@ -108,6 +120,25 @@ export function OrderConfirmation({ order }: OrderConfirmationProps) {
                   </span>
                 </div>
               ))}
+              <div className="flex justify-between text-[12px] font-medium text-[#8b7e6d] py-1 mt-2">
+                <span>Items Subtotal</span>
+                <span>₹{subtotal}</span>
+              </div>
+              <div className="flex justify-between text-[12px] font-medium text-[#8b7e6d] py-1">
+                <span>Platform Fee</span>
+                <span>₹{platformCharge}</span>
+              </div>
+              <div className="flex justify-between text-[12px] font-medium text-[#8b7e6d] py-1">
+                <span>GST (18%)</span>
+                <span>₹{taxAmount}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center mt-4 pt-4 border-t-2 border-dashed border-[#f5e6d3]">
+              <span className="text-base font-black text-[#44403c] uppercase tracking-tight">Total Bill</span>
+              <span className="text-2xl font-black text-[#b45309]">
+                ₹{totalBill}
+              </span>
             </div>
           </div>
 
@@ -121,7 +152,7 @@ export function OrderConfirmation({ order }: OrderConfirmationProps) {
                 Cash on Delivery (COD)
               </span>
               <p className="text-xs text-[#b45309]/80 font-medium">
-                Payment pending · Pay ₹{order.total} at pickup
+                Payment pending · Pay ₹{totalBill} at pickup
               </p>
             </div>
           </div>

@@ -8,6 +8,7 @@ export interface MenuItem {
   category: "biryani" | "sides" | "extras";
   popular: boolean;
   available: boolean;
+  branchId?: string | null;
 }
 
 export interface CartItem {
@@ -37,55 +38,21 @@ export interface Branch {
   directionsUrl: string;
 }
 
-export const BRANCHES: Branch[] = [
-  {
-    id: "seethammadhara",
-    name: "Bhale Biryani Seethammadhara",
-    shortName: "Seethammadhara",
-    address: "Near Alluri Seetharama Raju Statue, KRM Colony",
-    area: "Visakhapatnam",
-    rating: 4.0,
-    reviews: 185,
-    services: ["Dine-in", "Takeaway"],
-    directionsUrl: "https://maps.app.goo.gl/ZeBG1iuLaKPWBGFy7",
-  },
-  {
-    id: "diamond-park",
-    name: "Bhale Biryani Diamond Park",
-    shortName: "Diamond Park",
-    address: "Diamond Park Area",
-    area: "Visakhapatnam",
-    rating: 4.4,
-    reviews: 284,
-    services: ["Dine-in", "Takeaway"],
-    directionsUrl: "https://maps.app.goo.gl/fB2VrZeaqtRgHHoX8",
-  },
-  {
-    id: "nad-junction",
-    name: "Bhale Biryani NAD Junction",
-    shortName: "NAD Junction",
-    address: "NAD Junction",
-    area: "Visakhapatnam",
-    rating: 4.6,
-    reviews: 86,
-    services: ["Dine-in", "Takeaway", "No delivery"],
-    directionsUrl: "https://maps.app.goo.gl/53EjUFy1e4v9tXEg7",
-  },
-  {
-    id: "gajuwaka",
-    name: "Bhale Biryani Gajuwaka",
-    shortName: "Gajuwaka",
-    address: "Gajuwaka Area",
-    area: "Gajuwaka",
-    rating: 4.4,
-    reviews: 378,
-    services: ["Dine-in", "Takeaway"],
-    directionsUrl: "https://maps.app.goo.gl/8ktRRCTWWDfXuJqm9",
-  },
-];
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  password?: string; // Hashed
+  phone?: string;
+  address?: string;
+  role: "user" | "admin";
+  createdAt: string;
+}
 
 export interface Order {
   id: string;
+  userId?: string; // Optional for guests
   items: {
     menuItemId: string;
     name: string;

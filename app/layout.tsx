@@ -4,6 +4,8 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import LoadingProvider from '@/components/loading-provider'
 import PageTransition from '@/components/page-transition'
+import { AuthProvider } from "@/components/auth-provider"
+import { Toaster } from "sonner"
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -30,10 +32,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
-        <LoadingProvider>
-          {children}
-          <Analytics />
-        </LoadingProvider>
+        <AuthProvider>
+          <LoadingProvider>
+            {children}
+            <Analytics />
+            <Toaster position="top-center" expand={true} richColors />
+          </LoadingProvider>
+        </AuthProvider>
       </body>
     </html>
   )

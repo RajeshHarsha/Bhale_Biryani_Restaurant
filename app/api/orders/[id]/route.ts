@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOrderById, updateOrder } from "@/lib/db";
+import { OrderStatusUpdateSchema } from "@/lib/schemas";
+import { sanitizeObject } from "@/lib/security";
 
 export async function GET(
   _request: NextRequest,
@@ -7,7 +9,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const order = getOrderById(id);
+    const order = await getOrderById(id);
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
@@ -27,7 +29,18 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const updated = updateOrder(id, body);
+    
+    // 1. Validate
+    const validation = OrderStatusUpdateSchema.safeParse({ id, ...body });
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: "Invalid update data", details: validation.error.format() },
+        { status: 400 }
+      );
+    }
+
+    const { status } = sanitizeObject(validation.data);
+    const updated = await updateOrder(id, { status } as any);
     if (!updated) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }

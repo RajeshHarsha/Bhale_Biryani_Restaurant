@@ -1,0 +1,33 @@
+# REQUIRED DETAILS FROM RESTAURANT (BHALE BIRYANI)
+
+Please collect and provide the following details to complete the setup and for future features.
+
+## 1. Business Credentials
+- [ ] **GST Number**: Required for official invoicing and tax compliance.
+- [ ] **FSSAI License Number**: Mandatory for food businesses in India.
+- [ ] **PAN Card Details**: Of the business owner or the registered entity.
+- [ ] **Business Address**: Official registered address for each branch.
+
+## 2. Contact & Communication
+- [ ] **Official Phone Numbers**: For each branch (for customer support calls).
+- [ ] **Official WhatsApp Number**: For receiving order confirmations.
+- [ ] **Official Email ID**: For business correspondence and admin alerts.
+
+## 3. Financial Details (For Future Online Payments)
+- [ ] **Bank Account Number**: For settlements.
+- [ ] **IFSC Code**: Of the bank branch.
+- [ ] **UPI IDs**: For QR code generation or direct UPI payments.
+- [ ] **Account Holder Name**: As per bank records.
+
+## 4. Operational Details
+- [ ] **Branch Manager Details**: Name and direct number for each location.
+- [ ] **Operational Hours**: Opening and closing times for each branch.
+- [ ] **Holiday List**: Any fixed days when the restaurant is closed.
+
+## 5. Digital Assets
+- [ ] **High-Resolution Logo**: If different from the current one.
+- [ ] **Images of Dishes**: For the digital menu (Current menu uses generated/placeholder logic).
+- [ ] **Branch/Ambience Photos**: To show on the branch selector.
+
+---
+*Note: This file is a checklist. Please fill in these details as they become available.*

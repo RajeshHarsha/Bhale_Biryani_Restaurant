@@ -5,7 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MenuItem } from "@/lib/types";
+import { MenuItem, Branch } from "@/lib/types";
+import { MenuItemSchema } from "@/lib/schemas";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -22,15 +24,18 @@ import {
   Loader2,
   Save,
   ImageIcon,
+  Filter,
 } from "lucide-react";
 
 export default function AdminMenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [editItem, setEditItem] = useState<MenuItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [filterBranch, setFilterBranch] = useState<string>("all");
 
   const emptyItem: MenuItem = {
     id: "",
@@ -42,16 +47,27 @@ export default function AdminMenuPage() {
     category: "biryani",
     popular: false,
     available: true,
+    branchId: null,
   };
 
   useEffect(() => {
-    fetch("/api/menu")
-      .then((res) => res.json())
-      .then((data) => {
-        setMenuItems(data);
+    const fetchData = async () => {
+      try {
+        const [menuRes, branchRes] = await Promise.all([
+          fetch("/api/menu"),
+          fetch("/api/branches"),
+        ]);
+        const menuData = await menuRes.json();
+        const branchData = await branchRes.json();
+        setMenuItems(menuData);
+        setBranches(branchData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      }
+    };
+    fetchData();
   }, []);
 
   const toggleAvailability = async (item: MenuItem) => {
@@ -94,19 +110,37 @@ export default function AdminMenuPage() {
     setSaving(true);
 
     try {
+      // 1. Client-side validation
+      const itemToValidate = {
+        ...editItem,
+        branchId: editItem.branchId === "" ? null : editItem.branchId
+      };
+      
+      const validation = MenuItemSchema.safeParse(itemToValidate);
+      if (!validation.success) {
+        toast.error(validation.error.errors[0].message);
+        setSaving(false);
+        return;
+      }
+
+      const payload = {
+        ...validation.data,
+        branchId: editItem.branchId || null
+      };
+
       if (isNew) {
         const id = editItem.name
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, "");
-        const newItem = { ...editItem, id };
+        const newItem = { ...payload, id };
         const res = await fetch("/api/menu", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "add", item: newItem }),
         });
         if (res.ok) {
-          setMenuItems((prev) => [...prev, newItem]);
+          setMenuItems((prev) => [...prev, newItem as MenuItem]);
         }
       } else {
         const res = await fetch("/api/menu", {
@@ -115,12 +149,12 @@ export default function AdminMenuPage() {
           body: JSON.stringify({
             action: "update",
             id: editItem.id,
-            updates: editItem,
+            updates: payload,
           }),
         });
         if (res.ok) {
           setMenuItems((prev) =>
-            prev.map((i) => (i.id === editItem.id ? editItem : i))
+            prev.map((i) => (i.id === editItem.id ? { ...i, ...payload } : i))
           );
         }
       }
@@ -148,6 +182,12 @@ export default function AdminMenuPage() {
     }
   };
 
+  const filteredItems = menuItems.filter((item) => {
+    if (filterBranch === "all") return true;
+    if (filterBranch === "global") return !item.branchId;
+    return item.branchId === filterBranch;
+  });
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -163,7 +203,7 @@ export default function AdminMenuPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
             Menu Management
@@ -172,15 +212,31 @@ export default function AdminMenuPage() {
             Add, edit, or disable menu items
           </p>
         </div>
-        <Button onClick={handleAdd} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add Item
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-md text-sm">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <select
+              value={filterBranch}
+              onChange={(e) => setFilterBranch(e.target.value)}
+              className="bg-transparent border-none outline-none text-sm font-medium"
+            >
+              <option value="all">All Branches</option>
+              <option value="global">Global Items (No Branch)</option>
+              {branches.map(b => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          </div>
+          <Button onClick={handleAdd} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Item
+          </Button>
+        </div>
       </div>
 
       {/* Menu Items List */}
       <div className="space-y-3">
-        {menuItems.map((item) => (
+        {filteredItems.map((item) => (
           <Card
             key={item.id}
             className={`transition-opacity ${!item.available ? "opacity-60" : ""}`}
@@ -214,6 +270,15 @@ export default function AdminMenuPage() {
                     {!item.available && (
                       <Badge variant="destructive" className="text-xs">
                         Unavailable
+                      </Badge>
+                    )}
+                    {item.branchId ? (
+                      <Badge variant="secondary" className="text-[10px] h-5 bg-blue-100 text-blue-800 border-blue-200">
+                        {branches.find(b => b.id === item.branchId)?.shortName || "Branch"}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-[10px] h-5">
+                        Global
                       </Badge>
                     )}
                   </div>
@@ -271,11 +336,11 @@ export default function AdminMenuPage() {
           </Card>
         ))}
 
-        {menuItems.length === 0 && (
+        {filteredItems.length === 0 && (
           <Card>
             <CardContent className="p-12 text-center">
               <p className="text-muted-foreground mb-4">
-                No menu items yet. Add your first item to get started.
+                No menu items found for this branch.
               </p>
               <Button onClick={handleAdd} className="gap-2">
                 <Plus className="h-4 w-4" />
@@ -297,17 +362,19 @@ export default function AdminMenuPage() {
 
           {editItem && (
             <div className="space-y-4 py-2">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">
-                  Item Name
-                </label>
-                <Input
-                  value={editItem.name}
-                  onChange={(e) =>
-                    setEditItem({ ...editItem, name: e.target.value })
-                  }
-                  placeholder="e.g., Chicken Dum Biryani"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="text-sm font-medium text-foreground mb-1.5 block">
+                    Item Name
+                  </label>
+                  <Input
+                    value={editItem.name}
+                    onChange={(e) =>
+                      setEditItem({ ...editItem, name: e.target.value })
+                    }
+                    placeholder="e.g., Chicken Dum Biryani"
+                  />
+                </div>
               </div>
 
               <div>
@@ -378,6 +445,27 @@ export default function AdminMenuPage() {
                     <option value="extras">Extras</option>
                   </select>
                 </div>
+
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1.5 block">
+                    Assign to Branch
+                  </label>
+                  <select
+                    value={editItem.branchId || ""}
+                    onChange={(e) =>
+                      setEditItem({
+                        ...editItem,
+                        branchId: e.target.value === "" ? null : e.target.value,
+                      })
+                    }
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                  >
+                    <option value="">All Branches (Global)</option>
+                    {branches.map(b => (
+                      <option key={b.id} value={b.id}>{b.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -401,7 +489,7 @@ export default function AdminMenuPage() {
                     onChange={(e) =>
                       setEditItem({ ...editItem, popular: e.target.checked })
                     }
-                    className="rounded border-input"
+                    className="rounded border-input text-primary focus:ring-primary h-4 w-4"
                   />
                   <span className="text-sm text-foreground">Popular</span>
                 </label>
@@ -412,7 +500,7 @@ export default function AdminMenuPage() {
                     onChange={(e) =>
                       setEditItem({ ...editItem, available: e.target.checked })
                     }
-                    className="rounded border-input"
+                    className="rounded border-input text-primary focus:ring-primary h-4 w-4"
                   />
                   <span className="text-sm text-foreground">Available</span>
                 </label>

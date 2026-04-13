@@ -11,7 +11,7 @@ import {
   STATUS_LABELS,
   STATUS_COLORS,
   ORDER_STATUS_FLOW,
-  BRANCHES,
+  Branch,
 } from "@/lib/types";
 import {
   Search,
@@ -40,11 +40,19 @@ const statusTabs: { label: string; value: OrderStatus | "all" }[] = [
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<OrderStatus | "all">("all");
   const [search, setSearch] = useState("");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
+
+  const fetchBranches = useCallback(() => {
+    fetch("/api/branches")
+      .then((res) => res.json())
+      .then((data) => setBranches(data))
+      .catch(() => {});
+  }, []);
 
   const fetchOrders = useCallback(() => {
     setLoading(true);
@@ -59,9 +67,10 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders();
+    fetchBranches();
     const interval = setInterval(fetchOrders, 15000);
     return () => clearInterval(interval);
-  }, [fetchOrders]);
+  }, [fetchOrders, fetchBranches]);
 
   const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
     setUpdating(orderId);
@@ -110,7 +119,7 @@ export default function AdminOrdersPage() {
       }),
       Customer: order.customer.name,
       Phone: order.customer.phone,
-      Branch: BRANCHES.find((b) => b.id === order.branch)?.name || order.branch,
+      Branch: branches.find((b: Branch) => b.id === order.branch)?.name || order.branch,
       Type: order.orderType,
       Status: STATUS_LABELS[order.status],
       Total: order.total,
@@ -266,13 +275,13 @@ export default function AdminOrdersPage() {
                         </span>
                         {order.branch && (
                           <Badge variant="secondary" className="text-[10px] h-5">
-                            {BRANCHES.find(b => b.id === order.branch)?.shortName || order.branch}
+                            {branches.find((b: Branch) => b.id === order.branch)?.shortName || order.branch}
                           </Badge>
                         )}
                       </div>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span className="font-medium text-foreground">
-                          {order.customer.name}
+                          {order.customer?.name || "Guest"}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -350,14 +359,14 @@ export default function AdminOrdersPage() {
                             Customer
                           </h4>
                           <p className="text-sm text-foreground font-medium">
-                            {order.customer.name}
+                            {order.customer?.name || "Guest"}
                           </p>
                           <a
-                            href={`tel:${order.customer.phone}`}
+                            href={`tel:${order.customer?.phone || ""}`}
                             className="flex items-center gap-1 text-sm text-primary hover:underline mt-1"
                           >
                             <Phone className="h-3 w-3" />
-                            {order.customer.phone}
+                            {order.customer?.phone || "N/A"}
                           </a>
                           <p className="text-sm text-muted-foreground mt-2 capitalize flex items-center gap-1">
                             <UtensilsCrossed className="h-3 w-3" />
@@ -366,10 +375,10 @@ export default function AdminOrdersPage() {
                           <div className="mt-3 p-2 bg-background border border-border rounded text-xs">
                             <p className="font-semibold text-primary flex items-center gap-1 mb-1">
                               <MapPin className="h-3 w-3" />
-                              {BRANCHES.find(b => b.id === order.branch)?.name || order.branch}
+                              {branches.find((b: Branch) => b.id === order.branch)?.name || order.branch}
                             </p>
                             <p className="text-muted-foreground">
-                              {BRANCHES.find(b => b.id === order.branch)?.address}
+                              {branches.find((b: Branch) => b.id === order.branch)?.address}
                             </p>
                           </div>
                           <p className="text-xs text-muted-foreground mt-3 italic">

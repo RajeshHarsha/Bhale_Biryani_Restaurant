@@ -1,12 +1,13 @@
-"use client";
-
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Order, OrderType, Branch } from "@/lib/types";
 import { ArrowLeft, Loader2, UtensilsCrossed, ShoppingBag, MapPin } from "lucide-react";
+import { CreateOrderSchema } from "@/lib/schemas";
+import { toast } from "sonner";
 
 interface CheckoutFormProps {
   branch: Branch;
@@ -14,24 +15,58 @@ interface CheckoutFormProps {
   onSuccess: (order: Order) => void;
 }
 
+const PLATFORM_CHARGE = 5;
+const TAX_RATE = 0.18;
+
 export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
-  const { items, totalPrice } = useCart();
+  const { data: session } = useSession();
+  const { items, totalPrice: subtotal } = useCart();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [orderType, setOrderType] = useState<OrderType>("dine-in");
+  const [orderType, setOrderType] = useState<OrderType>("takeaway"); // DEFAULT TO TAKEAWAY
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const platformTotal = subtotal + PLATFORM_CHARGE;
+  const taxAmount = Math.round(platformTotal * TAX_RATE);
+  const grandTotal = platformTotal + taxAmount;
+
+  useEffect(() => {
+    if (session?.user) {
+      if (session.user.name) setName(session.user.name);
+      if ((session.user as any).phone) setPhone((session.user as any).phone);
+    }
+  }, [session]);
+
+  const handleDineInClick = () => {
+    toast.error("Sorry for the inconvience due to Gas Shortage now Dine-in is not available right now", {
+      duration: 5000,
+    });
+    setOrderType("takeaway");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!name.trim()) {
-      setError("Please enter your name");
-      return;
-    }
-    if (!phone.trim() || phone.length < 10) {
-      setError("Please enter a valid phone number");
+    // 1. Prepare data
+    const orderData = {
+      items: items.map((i) => ({
+        menuItemId: i.menuItem.id,
+        name: i.menuItem.name,
+        price: i.menuItem.price,
+        quantity: i.quantity,
+      })),
+      customer: { name: name.trim(), phone: phone.trim() },
+      orderType,
+      branch: branch.id,
+      total: grandTotal, // USE CALCULATED GRAND TOTAL
+    };
+
+    // 2. Validate
+    const validation = CreateOrderSchema.safeParse(orderData);
+    if (!validation.success) {
+      setError(validation.error.errors[0].message);
       return;
     }
 
@@ -40,17 +75,7 @@ export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((i) => ({
-            menuItemId: i.menuItem.id,
-            name: i.menuItem.name,
-            price: i.menuItem.price,
-            quantity: i.quantity,
-          })),
-          customer: { name: name.trim(), phone: phone.trim() },
-          orderType,
-          branch: branch.id,
-        }),
+        body: JSON.stringify(validation.data),
       });
 
       if (!res.ok) {
@@ -77,7 +102,12 @@ export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
           Back to Menu
         </button>
 
-        <h2 className="text-2xl font-bold text-foreground mb-6">Checkout</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-foreground">Checkout</h2>
+          <span className="text-[10px] font-bold text-muted-foreground px-2 py-0.5 bg-muted rounded border uppercase">
+            GSTIN: Applied (Pending)
+          </span>
+        </div>
 
         {/* Order Summary */}
         <div className="bg-secondary/50 rounded-lg p-4 mb-6">
@@ -104,10 +134,26 @@ export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
               </span>
             </div>
           ))}
-          <div className="border-t border-border mt-3 pt-3 flex justify-between">
-            <span className="font-bold text-foreground">Total</span>
-            <span className="font-bold text-primary text-lg">
-              {"\u20B9"}{totalPrice}
+          
+          <div className="border-t border-border/40 mt-3 pt-3 space-y-2">
+             <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                <span>Items Subtotal</span>
+                <span>{"\u20B9"}{subtotal}</span>
+             </div>
+             <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                <span>Platform Charges</span>
+                <span>{"\u20B9"}{PLATFORM_CHARGE}</span>
+             </div>
+             <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                <span>GST (18%)</span>
+                <span>{"\u20B9"}{taxAmount}</span>
+             </div>
+          </div>
+
+          <div className="border-t-2 border-dashed border-border mt-3 pt-3 flex justify-between">
+            <span className="font-bold text-foreground">Total Bill</span>
+            <span className="font-bold text-primary text-xl">
+              {"\u20B9"}{grandTotal}
             </span>
           </div>
         </div>
@@ -121,7 +167,7 @@ export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setOrderType("dine-in")}
+                onClick={handleDineInClick}
                 className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all ${
                   orderType === "dine-in"
                     ? "border-primary bg-primary/10 text-primary"
@@ -144,6 +190,9 @@ export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
                 <span className="text-sm font-medium">Takeaway</span>
               </button>
             </div>
+            <p className="text-[10px] text-amber-600 font-bold mt-2">
+              * Dine-in restricted due to current logistics issues
+            </p>
           </div>
 
           {/* Customer Details */}
@@ -198,9 +247,6 @@ export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
                 <p className="text-xs text-muted-foreground">Pay when you receive your order</p>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 italic">
-              * Online payments are not accepted at this time.
-            </p>
           </div>
 
           {/* Pickup & Delivery Notice */}
@@ -209,7 +255,7 @@ export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
               📍 Please come & collect your order from the restaurant.
             </p>
             <p className="text-xs text-amber-700">
-              🚚 Want door delivery? Additional charges starting from {"\u20B9"}10 will apply.
+              🚚 Want door delivery? Additional charges starting from {"\u20B9"}10 will apply for delivery.
             </p>
           </div>
 
@@ -225,7 +271,7 @@ export function CheckoutForm({ branch, onBack, onSuccess }: CheckoutFormProps) {
                 Placing Order...
               </>
             ) : (
-              <>Place Order (COD) · {"\u20B9"}{totalPrice}</>
+              <>Place Order (COD) · {"\u20B9"}{grandTotal}</>
             )}
           </Button>
         </form>

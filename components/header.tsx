@@ -6,17 +6,28 @@ import Image from "next/image";
 import { Menu, X, Phone, MapPin, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession, signOut } from "next-auth/react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navLinks = [
-  { href: "#home", label: "Home" },
-  { href: "#menu", label: "Menu" },
-  { href: "#reviews", label: "Reviews" },
-  { href: "#location", label: "Location" },
+  { href: "/#home", label: "Home" },
+  { href: "/#menu", label: "Menu" },
+  { href: "/#reviews", label: "Reviews" },
+  { href: "/#location", label: "Location" },
 ];
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +62,7 @@ export function Header() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-10">
+          <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -64,26 +75,64 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-6">
-            <a
-              href="tel:+919100888983"
-              className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Phone className="h-4 w-4" />
-              <span>091008 88983</span>
-            </a>
-            <Button asChild variant="outline" className="font-bold border-2 hover:bg-primary/5">
-              <a href="#location">
-                <MapPin className="h-4 w-4 mr-2" />
-                Directions
+          <div className="hidden md:flex items-center gap-4">
+            <div className="hidden xl:flex items-center gap-2 mr-2">
+              <a
+                href="tel:+919100888983"
+                className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Phone className="h-4 w-4" />
+                <span>091008 88983</span>
               </a>
-            </Button>
-            <Button asChild className="font-bold shadow-lg hover:shadow-primary/20 transition-all group">
+            </div>
+
+            <Button asChild variant="ghost" size="sm" className="font-bold text-xs hover:text-primary transition-colors">
               <Link href="/order">
-                <ShoppingBag className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform" />
+                <ShoppingBag className="h-4 w-4 mr-2" />
                 Order Now
               </Link>
             </Button>
+
+            {session ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 overflow-hidden border border-border/50 hover:border-primary/50 transition-colors">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={session.user?.image || ""} alt={session.user?.name || "User"} />
+                      <AvatarFallback className="bg-primary/10 text-primary font-black">
+                        {session.user?.name?.[0]?.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 mt-2 border-none shadow-2xl bg-card/95 backdrop-blur-xl" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-black leading-none text-foreground">{session.user?.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground font-medium">{session.user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-border/50" />
+                  <DropdownMenuItem asChild className="cursor-pointer font-bold focus:bg-primary/10 focus:text-primary transition-colors">
+                    <Link href="/profile">My Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer font-bold focus:bg-primary/10 focus:text-primary transition-colors">
+                    <Link href="/profile/orders">Order History</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-border/50" />
+                  <DropdownMenuItem 
+                    className="cursor-pointer font-bold text-red-500 focus:bg-red-50 focus:text-red-600 transition-colors"
+                    onClick={() => signOut()}
+                  >
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button asChild className="font-bold shadow-lg shadow-primary/20 transition-all rounded-full px-6">
+                <Link href="/login">Login</Link>
+              </Button>
+            )}
           </div>
 
           <button
@@ -110,6 +159,19 @@ export function Header() {
             className="md:hidden bg-background/98 backdrop-blur-2xl border-b border-border overflow-hidden"
           >
             <nav className="flex flex-col px-6 py-10 gap-6">
+              {session && (
+                <div className="flex items-center gap-4 pb-4 border-b border-border/50">
+                  <Avatar className="h-12 w-12 border border-primary/20">
+                    <AvatarFallback className="bg-primary/10 text-primary font-black text-lg">
+                      {session.user?.name?.[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-black text-foreground">{session.user?.name}</p>
+                    <p className="text-sm text-muted-foreground font-medium">{session.user?.email}</p>
+                  </div>
+                </div>
+              )}
               {navLinks.map((link, index) => (
                 <motion.div
                   key={link.href}
@@ -133,27 +195,38 @@ export function Header() {
                 transition={{ delay: 0.3 }}
                 className="space-y-6"
               >
-                <a
-                  href="tel:+919100888983"
-                  className="flex items-center gap-4 text-lg font-bold text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <Phone className="h-6 w-6" />
-                  <span>091008 88983</span>
-                </a>
-                <div className="grid gap-3">
-                  <Button asChild variant="outline" size="lg" className="w-full font-bold border-2">
-                    <a href="#location" onClick={() => setIsMenuOpen(false)}>
-                      <MapPin className="h-5 w-5 mr-2" />
-                      Get Directions
-                    </a>
-                  </Button>
-                  <Button asChild size="lg" className="w-full font-bold shadow-xl">
-                    <Link href="/order" onClick={() => setIsMenuOpen(false)}>
-                      <ShoppingBag className="h-5 w-5 mr-2" />
-                      Order Now
+                {session ? (
+                  <>
+                    <Link
+                      href="/profile"
+                      className="flex items-center gap-4 text-lg font-bold text-foreground hover:text-primary transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Profile
                     </Link>
+                    <Link
+                      href="/profile/orders"
+                      className="flex items-center gap-4 text-lg font-bold text-foreground hover:text-primary transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Orders
+                    </Link>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full font-bold"
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Log out
+                    </Button>
+                  </>
+                ) : (
+                  <Button asChild className="w-full font-bold shadow-xl rounded-full h-12 text-lg">
+                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>Login / Sign Up</Link>
                   </Button>
-                </div>
+                )}
               </motion.div>
             </nav>
           </motion.div>
